@@ -1,5 +1,7 @@
 package com.ayosec.procfs;
 
+import com.sun.jna.Native;
+
 public class Proc {
   private int pid;
   private ProcStat lastProcStat;
@@ -53,5 +55,20 @@ public class Proc {
     this.lastProcStat = procStat;
 
     return cpuUsage;
+  }
+
+  /**
+   * Send a signal to the associated process.
+   *
+   * This method is a wrapper for
+   * <a href="http://kernel.org/doc/man-pages/online/pages/man2/kill.2.html">kill(2)</a>
+   *
+   * @param signal Signal to send
+   */
+  public void sendSignal(int signal) throws ErrnoException {
+    int ret = LibC.Handle.module.kill(pid, signal);
+
+    if(ret != 0)
+      throw new ErrnoException(Native.getLastError(), "Signal " + signal + " to process " + pid);
   }
 }

@@ -13,19 +13,40 @@ public class Proc {
     this.lastCPUStat = null;
   }
 
+  /**
+   * Return the PID of the process related to this Proc instance.
+   */
   public int getPID() {
     return pid;
   }
 
+  /**
+   * Memory stats for the process.
+   *
+   * @return a new instance of a ProcStat.
+   */
   public ProcStat getStat() throws java.io.IOException, ProcStat.InvalidStatFormat {
     return new ProcStat(FileHelper.read("/proc/" + this.pid + "/stat"));
   }
 
+  /**
+   * Memory stats for the process.
+   *
+   * @return a new instance of a ProcStatMemory.
+   */
   public ProcStatMemory getStatMemory() throws java.io.IOException {
     return new ProcStatMemory(FileHelper.read("/proc/" + this.pid + "/statm"));
   }
 
-  // CPU usage
+  /**
+   * Computes the CPU usage of the process.
+   *
+   * The first time this method is called the result will be 0.0, since there is
+   * no previous data. Next times the value will be the percentage of the tim
+   * consumed in this process since the last call.
+   *
+   * A negative value will be returned when the value can not be computed.
+   */
   public double getCPUUsage() {
     ProcStat procStat;
     CPUStat cpuStat;
